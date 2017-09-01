@@ -17,7 +17,7 @@ traefik_settings:
     }
   - {
     name: "traefikLogsFile",
-    value: "/var/log/traefik.log""
+    value: "/var/log/traefik.log"
     }
 
-extra_traefik_settings: []
+traefik_extra_settings: []
