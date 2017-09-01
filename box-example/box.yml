@@ -9,9 +9,9 @@
     - debug: msg="Pre tasks section"
 
   roles:
-     - {
-         role: "sa-docker",
-       }
+#     - {
+#         role: "sa-docker",
+#       }
      - {
          role: "sa-traefik",
        }
@@ -19,3 +19,32 @@
 
   tasks:
     - debug: msg="Tasks section"
+
+    - name: Traefik | Configure default entry points
+      template: src="{{playbook_dir}}/templates/entrypoints.toml.j2" dest="/opt/traefik/conf.d/entrypoints.toml" owner="root" group="root" mode="0644"
+      become: yes
+      tags:
+        - traefik
+        - create
+
+    - name: Traefik | Configure web administration backend
+      template: src="{{playbook_dir}}/templates/web_backend.toml.j2" dest="/opt/traefik/conf.d/web_backend.toml" owner="root" group="root" mode="0644"
+      become: yes
+      tags:
+        - traefik
+        - create
+
+    - name: Traefik | Configure docker link
+      template: src="{{playbook_dir}}/templates/docker.toml.j2" dest="/opt/traefik/conf.d/docker.toml" owner="root" group="root" mode="0644"
+      become: yes
+      tags:
+        - traefik
+        - create
+
+
+    - name: Traefik | Restart if watching is not activated
+      service: name="traefik" state="restarted" enabled="yes"
+      become: yes
+      tags:
+        - traefik
+        - create
