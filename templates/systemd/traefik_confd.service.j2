@@ -4,7 +4,8 @@ Description=Traefik
 [Service]
 Type=notify
 WorkingDirectory={{traefik_install_dir}}
-ExecStart={{ traefik_bin_path | default('/opt/traefik/traefik') }} --configFile={{ traefik_config_file | default('/opt/traefik/traefik.toml') }}
+ExecStartPre={{traefik_install_dir}}/traefik_compile_confd.sh
+ExecStart={{ traefik_bin_path }} --configFile={{ traefik_install_dir }}/traefik_generated.toml
 Restart=always
 WatchdogSec=1s
 

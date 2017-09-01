@@ -18,18 +18,46 @@
       - traefik
       - create
 
-  - name: Traefik | Configure systemd startup
+  - name: Traefik | Configure systemd startup (normal)
     template:
       src: "{{role_dir}}/templates/systemd/traefik.service.j2"
       dest: "/etc/systemd/system/traefik.service"
       owner: "root"
       group: "root"
       mode: "0644"
-      force: "no"
+    when: not option_confd_fallback
     become: yes
     tags:
       - traefik
       - create
+
+  - name: Traefik | Template compile confd script (confd fallback)
+    template:
+      src: "{{role_dir}}/templates/traefik_compile_confd.sh.j2"
+      dest: "{{ traefik_install_dir }}/traefik_compile_confd.sh"
+      owner: "root"
+      group: "root"
+      mode: "u=rwx,g=rx,o=rx"
+    when: option_confd_fallback
+    become: yes
+    tags:
+      - traefik
+      - create
+
+
+  - name: Traefik | Configure systemd startup (confd fallback)
+    template:
+      src: "{{role_dir}}/templates/systemd/traefik_confd.service.j2"
+      dest: "/etc/systemd/system/traefik.service"
+      owner: "root"
+      group: "root"
+      mode: "0644"
+    when: option_confd_fallback
+    become: yes
+    tags:
+      - traefik
+      - create
+
 
   - name: Traefik | Ensure service is stopped for idempotency update
     service: name="traefik" state="stopped"
@@ -47,8 +75,13 @@
       - create
       - update
 
+
   - name: Traefik | Ensure traefik service is enabled and started
-    service: name="traefik" state="started" enabled="yes"
+    systemd:
+      name: "traefik"
+      state: started
+      daemon_reload: yes
+      enabled: yes
     become: yes
     when: docker_test is not defined
     tags:
