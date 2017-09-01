@@ -1,8 +1,8 @@
 {% for line in traefik_settings %}
-{{line.name}} = {{line.value}}
+{{line.name}} = "{{line.value}}"
 {% endfor %}
 {% for line in traefik_extra_settings %}
-{{line.name}} = {{line.value}}
+{{line.name}} = "{{line.value}}"
 {% endfor %}
 
 [file]

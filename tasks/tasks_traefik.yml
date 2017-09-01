@@ -12,14 +12,20 @@
       - update
 
   - name: Traefik | Configure wildcard conf.d/*.toml configuration
-    template: src="{{role_dir}}/templates/traefik.toml.j2" dest="{{ traefik_install_dir }}/traefik.toml" owner="root" group="root" mode="0744"
+    template: src="{{role_dir}}/templates/traefik.toml.j2" dest="{{ traefik_install_dir }}/traefik.toml" owner="root" group="root" mode="0644"
     become: yes
     tags:
       - traefik
       - create
 
   - name: Traefik | Configure systemd startup
-    template: src="{{role_dir}}/templates/systemd/traefik.service.j2" dest="/etc/systemd/system/traefik.service" owner="root" group="root" mode="0644"
+    template:
+      src: "{{role_dir}}/templates/systemd/traefik.service.j2"
+      dest: "/etc/systemd/system/traefik.service"
+      owner: "root"
+      group: "root"
+      mode: "0644"
+      force: "no"
     become: yes
     tags:
       - traefik
@@ -27,6 +33,7 @@
 
   - name: Traefik | Ensure service is stopped for idempotency update
     service: name="traefik" state="stopped"
+    when: docker_test is not defined
     become: yes
     tags:
       - traefik
@@ -43,6 +50,7 @@
   - name: Traefik | Ensure traefik service is enabled and started
     service: name="traefik" state="started" enabled="yes"
     become: yes
+    when: docker_test is not defined
     tags:
       - traefik
       - create
