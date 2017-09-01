@@ -24,9 +24,16 @@ galaxy_info:
     - name: Ubuntu
       versions:
         - xenial
+    - name: EL
+      versions:
+        - 7
+    - name: Fedora
+      versions:
+        - 23
+
   galaxy_tags:
     - traefik
-    - ubuntu
+    - microservices
   #platforms:
   #- name: EL
   #  versions:
