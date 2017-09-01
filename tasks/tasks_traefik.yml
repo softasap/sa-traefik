@@ -27,6 +27,7 @@
 
   - name: Traefik | Ensure service is stopped for idempotency update
     service: name="traefik" state="stopped"
+    when: docker_test is not defined
     become: yes
     tags:
       - traefik
@@ -43,6 +44,7 @@
   - name: Traefik | Ensure traefik service is enabled and started
     service: name="traefik" state="started" enabled="yes"
     become: yes
+    when: docker_test is not defined    
     tags:
       - traefik
       - create
