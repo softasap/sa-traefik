@@ -16,4 +16,4 @@ traefik_settings:
     value: "DEBUG"
     }
 
-extra_traefik_settings: []
+traefik_extra_settings: []
