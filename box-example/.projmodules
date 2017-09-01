@@ -1,0 +1,7 @@
+[submodule "roles/sa-traefik"]
+        path = roles/sa-traefik
+        url = https://github.com/softasap/sa-traefik.git
+[submodule "roles/sa-docker"]
+        path = roles/sa-docker
+        url = https://github.com/softasap/sa-docker.git
+

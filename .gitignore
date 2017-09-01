@@ -1,0 +1,4 @@
+box-example/roles
+*.retry
+tempfile
+local*

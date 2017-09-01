@@ -1,0 +1,49 @@
+---
+
+  - name: Traefik | Configure directories
+    file: path="{{ item }}" state=directory
+    with_items:
+      - "{{ traefik_install_dir }}"
+      - "{{ traefik_install_dir }}/conf.d"
+    become: yes
+    tags:
+      - traefik
+      - create
+      - update
+
+  - name: Traefik | Configure wildcard conf.d/*.toml configuration
+    template: src="{{role_dir}}/templates/traefik.toml.j2" dest="{{ traefik_install_dir }}/traefik.toml" owner="root" group="root" mode="0744"
+    become: yes
+    tags:
+      - traefik
+      - create
+
+  - name: Traefik | Configure systemd startup
+    template: src="{{role_dir}}/templates/systemd/traefik.service.j2" dest="/etc/systemd/system/traefik.service" owner="root" group="root" mode="0644"
+    become: yes
+    tags:
+      - traefik
+      - create
+
+  - name: Traefik | Ensure service is stopped for idempotency update
+    service: name="traefik" state="stopped"
+    become: yes
+    tags:
+      - traefik
+      - update
+
+  - name: Traefik | Download Traefik binary
+    get_url: url="{{ traefik_distribution_url }}" dest="{{ traefik_bin_path }}" owner="root" group="root" mode="0755" force="yes"
+    become: yes
+    tags:
+      - traefik
+      - create
+      - update
+
+  - name: Traefik | Ensure traefik service is enabled and started
+    service: name="traefik" state="started" enabled="yes"
+    become: yes
+    tags:
+      - traefik
+      - create
+      - update

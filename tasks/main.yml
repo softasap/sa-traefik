@@ -1,0 +1,5 @@
+---
+# tasks file for sa-traefik
+  - include: tasks_traefik.yml
+
+  
