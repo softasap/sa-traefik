@@ -2,6 +2,8 @@ sa-traefik
 ===========
 [![Build Status](https://travis-ci.org/softasap/sa-traefik.svg?branch=master)](https://travis-ci.org/softasap/sa-traefik)
 
+Note: play relies on changes to be introduced in traefik since 1.4.0 ; Previous traefik versions are not supported.
+
 Example of use: check box-example
 
 Simple:
@@ -39,4 +41,3 @@ Code licensed under the [BSD 3 clause] (https://opensource.org/licenses/BSD-3-Cl
 Subscribe for roles updates at [FB] (https://www.facebook.com/SoftAsap/)
 
 Join Gitter channel at [Gitter] (https://gitter.im/softasap/)
-

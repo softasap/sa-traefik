@@ -4,7 +4,7 @@
 role_dir: "{{ role_path }}"
 
 traefik_install_dir: /opt/traefik
-traefik_version: 1.3.7
+traefik_version: "1.4.0-rc1"
 
 traefik_distribution_url: https://github.com/containous/traefik/releases/download/v{{traefik_version}}/traefik_linux-amd64
 traefik_bin_path: "{{ traefik_install_dir }}/traefik"
