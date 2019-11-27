@@ -35,7 +35,7 @@ galaxy_info:
         - 25
         - 26
         - 27
-        - 28 
+        - 28
   galaxy_tags:
     - traefik
     - microservices

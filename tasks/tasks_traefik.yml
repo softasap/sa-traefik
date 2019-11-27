@@ -12,7 +12,7 @@
       - update
 
   - name: Traefik | Configure wildcard conf.d/*.toml configuration
-    template: src="{{role_dir}}/templates/traefik.toml.j2" dest="{{ traefik_install_dir }}/traefik.toml" owner="root" group="root" mode="0644"
+    template: src="{{ role_dir }}/templates/traefik.toml.j2" dest="{{ traefik_install_dir }}/traefik.toml" owner="root" group="root" mode="0644"
     become: yes
     tags:
       - traefik
@@ -20,7 +20,7 @@
 
   - name: Traefik | Configure systemd startup (normal)
     template:
-      src: "{{role_dir}}/templates/systemd/traefik.service.j2"
+      src: "{{ role_dir }}/templates/systemd/traefik.service.j2"
       dest: "/etc/systemd/system/traefik.service"
       owner: "root"
       group: "root"
@@ -33,7 +33,7 @@
 
   - name: Traefik | Template compile confd script (confd fallback)
     template:
-      src: "{{role_dir}}/templates/traefik_compile_confd.sh.j2"
+      src: "{{ role_dir }}/templates/traefik_compile_confd.sh.j2"
       dest: "{{ traefik_install_dir }}/traefik_compile_confd.sh"
       owner: "root"
       group: "root"
@@ -70,7 +70,7 @@
 
   - name: Traefik | Configure systemd startup (confd fallback)
     template:
-      src: "{{role_dir}}/templates/systemd/traefik_confd.service.j2"
+      src: "{{ role_dir }}/templates/systemd/traefik_confd.service.j2"
       dest: "/etc/systemd/system/traefik.service"
       owner: "root"
       group: "root"
