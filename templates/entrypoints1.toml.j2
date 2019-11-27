@@ -1,0 +1,15 @@
+# static configuration
+defaultEntryPoints = ["http", "https"]
+
+[entryPoints]
+  [entryPoints.http]
+    address = ":80"
+#    [entryPoints.http.redirect]
+#      entryPoint = "https"
+
+  [entryPoints.https]
+    address = ":443"
+#    [entryPoints.https.tls]
+#      [[entryPoints.https.tls.certificates]]
+#        certFile = "examples/traefik.crt"
+#        keyFile = "examples/traefik.key"

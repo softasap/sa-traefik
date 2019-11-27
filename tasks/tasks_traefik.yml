@@ -1,5 +1,15 @@
 ---
 
+  - name: Traefik | Check installed
+    shell: test -x {{ traefik_bin_path }}
+    register: traefik_exists
+    changed_when: False
+    ignore_errors: true
+    tags:
+      - statping
+      - skip_ansible_lint
+
+
   - name: Traefik | Configure directories
     file: path="{{ item }}" state=directory
     with_items:
@@ -11,8 +21,18 @@
       - create
       - update
 
+  - name: Detect traefik version - is first
+    set_fact:
+      traefik_family: 1
+    when: traefik_version is version_compare('2', '<')
+
+  - name: Detect traefik version - is second or above
+    set_fact:
+      traefik_family: 2
+    when: traefik_version is version_compare('2', '>=')
+
   - name: Traefik | Configure wildcard conf.d/*.toml configuration
-    template: src="{{ role_dir }}/templates/traefik.toml.j2" dest="{{ traefik_install_dir }}/traefik.toml" owner="root" group="root" mode="0644"
+    template: src="{{ role_dir }}/templates/traefik{{ traefik_family }}.toml.j2" dest="{{ traefik_install_dir }}/traefik.toml" owner="root" group="root" mode="0644"
     become: yes
     tags:
       - traefik
@@ -35,8 +55,8 @@
     template:
       src: "{{ role_dir }}/templates/traefik_compile_confd.sh.j2"
       dest: "{{ traefik_install_dir }}/traefik_compile_confd.sh"
-      owner: "root"
-      group: "root"
+      owner: root
+      group: root
       mode: "u=rwx,g=rx,o=rx"
     when: option_confd_fallback
     become: yes
@@ -45,7 +65,12 @@
       - create
 
   - name: Traefik | Configure default entry points
-    template: src="templates/entrypoints.toml.j2" dest="{{ traefik_install_dir }}/conf.d/entrypoints.toml" owner="root" group="root" mode="0644"
+    template:
+      src: "templates/entrypoints{{ traefik_family }}.toml.j2"
+      dest: "{{ traefik_install_dir }}/conf.d/entrypoints.toml"
+      owner: root
+      group: root
+      mode: 0644
     become: yes
     when: option_traefik_conf_defaultentrypoints
     tags:
@@ -53,7 +78,12 @@
       - create
 
   - name: Traefik | Configure web administration backend
-    template: src="templates/web_backend.toml.j2" dest="{{ traefik_install_dir }}/conf.d/web_backend.toml" owner="root" group="root" mode="0644"
+    template:
+      src: "templates/web_backend{{ traefik_family }}.toml.j2"
+      dest: "{{ traefik_install_dir }}/conf.d/web_backend.toml"
+      owner: root
+      group: root
+      mode: 0644
     become: yes
     when: option_traefik_conf_webbackend
     tags:
@@ -61,7 +91,12 @@
       - create
 
   - name: Traefik | Configure docker link
-    template: src="templates/docker.toml.j2" dest="{{ traefik_install_dir }}/conf.d/docker.toml" owner="root" group="root" mode="0644"
+    template:
+      src: "templates/docker{{ traefik_family }}.toml.j2"
+      dest: "{{ traefik_install_dir }}/conf.d/docker.toml"
+      owner: root
+      group: root
+      mode: 0644
     become: yes
     when: option_traefik_conf_docker
     tags:
@@ -72,9 +107,9 @@
     template:
       src: "{{ role_dir }}/templates/systemd/traefik_confd.service.j2"
       dest: "/etc/systemd/system/traefik.service"
-      owner: "root"
-      group: "root"
-      mode: "0644"
+      owner: root
+      group: root
+      mode: 0644
     when: option_confd_fallback
     become: yes
     tags:
@@ -84,7 +119,7 @@
 
   - name: Traefik | Ensure service is stopped for idempotency update
     service: name="traefik" state="stopped"
-    when: docker_test is not defined
+    when: docker_test is not defined and traefik_exists is failed
     become: yes
     tags:
       - traefik
@@ -93,6 +128,8 @@
   - name: Traefik | Download Traefik binary
     get_url: url="{{ traefik_distribution_url }}" dest="{{ traefik_bin_path }}" owner="root" group="root" mode="0755" force="yes"
     become: yes
+    register: new_traefik_binary_downloaded
+    when: traefik_exists is failed
     tags:
       - traefik
       - create
@@ -106,7 +143,7 @@
       daemon_reload: yes
       enabled: yes
     become: yes
-    when: docker_test is not defined
+    when: docker_test is not defined and new_traefik_binary_downloaded is changed
     tags:
       - traefik
       - create
