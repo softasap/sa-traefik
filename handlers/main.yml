@@ -1,2 +1,10 @@
 ---
 # handlers file for sa-traefik
+
+  - name: restart-traefik
+    systemd:
+      name: "traefik"
+      state: restarted
+      daemon_reload: yes
+      enabled: yes
+    become: yes

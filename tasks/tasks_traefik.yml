@@ -32,7 +32,12 @@
     when: traefik_version is version_compare('2', '>=')
 
   - name: Traefik | Configure wildcard conf.d/*.toml configuration
-    template: src="{{ role_dir }}/templates/traefik{{ traefik_family }}.toml.j2" dest="{{ traefik_install_dir }}/traefik.toml" owner="root" group="root" mode="0644"
+    template:
+      src: "{{ role_dir }}/templates/traefik{{ traefik_family }}.toml.j2"
+      dest: "{{ traefik_install_dir }}/traefik.toml"
+      owner: root
+      group: root
+      mode: 0644
     become: yes
     tags:
       - traefik
@@ -42,9 +47,9 @@
     template:
       src: "{{ role_dir }}/templates/systemd/traefik.service.j2"
       dest: "/etc/systemd/system/traefik.service"
-      owner: "root"
-      group: "root"
-      mode: "0644"
+      owner: root
+      group: root
+      mode: 0644
     when: not option_confd_fallback
     become: yes
     tags:
@@ -72,6 +77,7 @@
       group: root
       mode: 0644
     become: yes
+    notify: restart-traefik
     when: option_traefik_conf_defaultentrypoints
     tags:
       - traefik
@@ -86,6 +92,7 @@
       mode: 0644
     become: yes
     when: option_traefik_conf_webbackend
+    notify: restart-traefik
     tags:
       - traefik
       - create
@@ -98,7 +105,22 @@
       group: root
       mode: 0644
     become: yes
+    notify: restart-traefik
     when: option_traefik_conf_docker
+    tags:
+      - traefik
+      - create
+
+  - name: Traefik | Configure docker link
+    template:
+      src: "templates/acme{{ traefik_family }}.toml.j2"
+      dest: "{{ traefik_install_dir }}/conf.d/acme.toml"
+      owner: root
+      group: root
+      mode: 0644
+    become: yes
+    notify: restart-traefik
+    when: option_traefik_conf_webacme
     tags:
       - traefik
       - create
@@ -135,7 +157,6 @@
       - create
       - update
 
-
   - name: Traefik | Ensure traefik service is enabled and started
     systemd:
       name: "traefik"
@@ -143,7 +164,8 @@
       daemon_reload: yes
       enabled: yes
     become: yes
-    when: docker_test is not defined and new_traefik_binary_downloaded is changed
+    when: docker_test is not defined
+    changed_when: False
     tags:
       - traefik
       - create
