@@ -1,0 +1,7 @@
+[acme]
+  email = "{{ traefik_acme_email }}"
+  storage = "acme.json"
+  entryPoint = "https"
+  onHostRule = true
+  [acme.httpChallenge]
+    entryPoint = "http"

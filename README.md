@@ -35,6 +35,10 @@ Advanced:
 
          traefik_install_dir: /opt/traefik,
          traefik_version: "1.4.0-rc1",
+        
+         option_traefik_conf_docker: true,
+         option_traefik_conf_defaultentrypoints: true,
+         option_traefik_conf_webbackend: true,
 
          traefik_settings:
            - {
