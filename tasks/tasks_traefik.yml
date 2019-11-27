@@ -44,6 +44,29 @@
       - traefik
       - create
 
+  - name: Traefik | Configure default entry points
+    template: src="templates/entrypoints.toml.j2" dest="{{ traefik_install_dir }}/conf.d/entrypoints.toml" owner="root" group="root" mode="0644"
+    become: yes
+    when: option_traefik_conf_defaultentrypoints
+    tags:
+      - traefik
+      - create
+
+  - name: Traefik | Configure web administration backend
+    template: src="templates/web_backend.toml.j2" dest="{{ traefik_install_dir }}/conf.d/web_backend.toml" owner="root" group="root" mode="0644"
+    become: yes
+    when: option_traefik_conf_webbackend
+    tags:
+      - traefik
+      - create
+
+  - name: Traefik | Configure docker link
+    template: src="templates/docker.toml.j2" dest="{{ traefik_install_dir }}/conf.d/docker.toml" owner="root" group="root" mode="0644"
+    become: yes
+    when: option_traefik_conf_docker
+    tags:
+      - traefik
+      - create
 
   - name: Traefik | Configure systemd startup (confd fallback)
     template:
